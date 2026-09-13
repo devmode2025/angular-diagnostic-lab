@@ -1,5 +1,5 @@
 // src/app/services/real-time.service.ts
-import { Injectable } from '@angular/core';
+import { Injectable, NgZone } from '@angular/core';
 import { BehaviorSubject, interval } from 'rxjs';
 
 export interface DataPoint {
@@ -14,18 +14,22 @@ export interface DataPoint {
   providedIn: 'root'
 })
 export class RealTimeService {
-  // Data stream that updates every second.
-  // Emits a single-element array containing only the newest point.
   private dataSubject = new BehaviorSubject<DataPoint[]>([]);
   public data$ = this.dataSubject.asObservable();
 
   private counter = 0;
   private sources = ['Alpha', 'Beta', 'Gamma', 'Delta'];
 
-  constructor() {
-    // Simulate a real-time data feed: one new point per second.
-    interval(1000).subscribe(() => {
-      this.generateDataPoint();
+  constructor(private zone: NgZone) {
+    // Run the interval outside Angular's zone so it doesn't trigger
+    // change detection on every tick. Re-enter the zone only when
+    // there's actually new data to push.
+    this.zone.runOutsideAngular(() => {
+      interval(1000).subscribe(() => {
+        this.zone.run(() => {
+          this.generateDataPoint();
+        });
+      });
     });
   }
 
@@ -39,7 +43,6 @@ export class RealTimeService {
       payload: 'x'.repeat(512)
     };
 
-    // Emit only the new point.
     this.dataSubject.next([newPoint]);
   }
 }

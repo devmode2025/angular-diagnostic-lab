@@ -6,8 +6,6 @@ import { takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-counter',
-  standalone: true,
-  imports: [DatePipe],
   template: `
     <div class="counter-container">
       <h3>Live Counter</h3>

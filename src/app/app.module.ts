@@ -6,17 +6,19 @@ import { AppComponent } from './app.component';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { CounterComponent } from './components/counter/counter.component';
 import { NavigationComponent } from './components/navigation/navigation.component';
+import { DatePipe } from '@angular/common'
 
 @NgModule({
   declarations: [
     AppComponent,
+    CounterComponent,
     DashboardComponent,
     NavigationComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
-    CounterComponent
+    DatePipe,
   ],
   providers: [],
   bootstrap: [AppComponent]

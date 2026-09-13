@@ -1,5 +1,5 @@
 // src/app/components/dashboard/dashboard.component.ts
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, OnDestroy } from '@angular/core';
 import { Subject, takeUntil } from 'rxjs';
 import { RealTimeService, DataPoint } from '../../services/real-time.service';
 
@@ -75,7 +75,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   private destroy$ = new Subject<void>();
 
-  constructor(private realTimeService: RealTimeService) {}
+  constructor(private realTimeService: RealTimeService, private cdr: ChangeDetectorRef) {}
 
   ngOnInit(): void {
     this.realTimeService.data$
@@ -89,8 +89,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
       });
   }
 
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
-  }
+ngOnDestroy(): void {
+  this.cdr.detach();              // ← detach from change detection first
+  this.destroy$.next();
+  this.destroy$.complete();
+}
 }
